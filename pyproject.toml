@@ -1,0 +1,14 @@
+[project]
+name = "skillpage-latex-renderer"
+version = "0.1.0"
+description = "Renders latex files to pdf"
+requires-python = ">=3.12"
+dependencies = [
+    "aiofiles>=24.1.0",
+    "asyncio>=4.0.0",
+    "python-dotenv>=1.1.1",
+    "python-multipart>=0.0.20",
+    "redis>=6.4.0",
+    "starlette>=0.48.0",
+    "uvicorn>=0.36.0",
+]
