@@ -30,6 +30,11 @@ async def lifespan(app: Starlette):
     await app.state.redis.close()
 
 
+# GET /health
+async def health(request):
+    return JSONResponse({"message": "OK"})
+
+
 # POST /document
 async def post_document(request):
     document_id = str(uuid.uuid4())
@@ -103,6 +108,7 @@ app = Starlette(
         Route("/document", post_document, methods=["POST"]),
         Route("/document/{document_id}", get_document, methods=["GET"]),
         Route("/state/{document_id}", get_state, methods=["GET"]),
+        Route("/health", health, methods=["GET"]),
     ],
     lifespan=lifespan,
 )
