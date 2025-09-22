@@ -2,13 +2,7 @@
 
 An asynchronous LaTeX rendering service that converts LaTeX documents to PDF.
 
-## Prerequisites
-
-- Python 3.12 or higher
-- Redis server
-- LuaLaTeX (LaTeX distribution with LuaTeX engine)
-
-## Docker
+## Running the service with Docker
 
 Either build the service yourself or use the pre-built image from Docker Hub.
 
@@ -30,41 +24,6 @@ services:
       - redis
 ```
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd skillpage-latex-renderer
-   ```
-
-2. Install dependencies:
-   ```bash
-   uv sync
-   ```
-
-## Environment Variables
-
-Create a `.env` file in the project root with the following variables:
-
-```env
-REDIS_URL=redis://localhost:6379/0
-DEBUG=False
-```
-
-## Running the Service
-
-1. Start the Redis server:
-   ```bash
-   redis-server
-   ```
-
-2. Start the LaTeX renderer service:
-   ```bash
-   uvicorn main:app --reload
-   ```
-   The service will be available at `http://localhost:8000`
-
 ## API Documentation
 
 ### 1. Submit a LaTeX Document
@@ -76,10 +35,10 @@ Submit LaTeX files for rendering. The main LaTeX file must be named `main.tex`.
 **Request:**
 - Content-Type: `multipart/form-data`
 - Form fields:
-  - `document`: (required) All files for the render (.tex, .cls etc.). Must contain a `main.tex` file.
-  - `image`: (optional) Additional image files referenced in the LaTeX document
+    - `document`: (required) All files for the render (.tex, .cls etc.). Must contain a `main.tex` file.
+    - `image`: (optional) Additional image files referenced in the LaTeX document
 - Header:
-  - `X-Webhook-Url`: (optional) URL to receive webhook notifications about the document's status
+    - `X-Webhook-Url`: (optional) URL to receive webhook notifications about the document's status
 
 **Response (202 Accepted):**
 ```json
@@ -178,6 +137,47 @@ The service returns appropriate HTTP status codes and error messages:
 - `400 Bad Request`: Invalid request format
 - `404 Not Found`: Document ID does not exist
 - `500 Internal Server Error`: Server error during processing
+## Local development
+
+- Python 3.12 or higher
+- Redis server
+- LuaLaTeX (LaTeX distribution with LuaTeX engine)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd skillpage-latex-renderer
+   ```
+
+2. Install dependencies:
+   ```bash
+   uv sync
+   ```
+
+### Environment Variables
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+REDIS_URL=redis://localhost:6379/0
+DEBUG=False
+```
+
+### Running the Service
+
+1. Start the Redis server:
+   ```bash
+   redis-server
+   ```
+
+2. Start the LaTeX renderer service:
+   ```bash
+   uvicorn main:app --reload
+   ```
+   The service will be available at `http://localhost:8000`
+
 
 ## License
 
