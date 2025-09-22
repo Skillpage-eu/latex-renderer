@@ -56,6 +56,8 @@ Submit LaTeX files for rendering. The main LaTeX file must be named `main.tex`.
 - Form fields:
   - `document`: (required) All files for the render (.tex, .cls etc.). Must contain a `main.tex` file.
   - `image`: (optional) Additional image files referenced in the LaTeX document
+- Header:
+  - `X-Webhook-Url`: (optional) URL to receive webhook notifications about the document's status
 
 **Response (202 Accepted):**
 ```json
@@ -123,6 +125,29 @@ Download the rendered PDF file if processing is complete.
    ```bash
    curl -o output.pdf http://localhost:8000/document/550e8400-e29b-41d4-a716-446655440000
    ```
+
+4. (Optional) Submit a LaTeX document with webhook:
+   ```bash
+   curl --header "X-Webhook-Url: https://example.com/webhook" -X POST -F "document=@main.tex" -F "image=@figure1.png" http://localhost:8000/document
+   ```
+   Response:
+   ```json
+   {
+     "message": "Document received",
+     "document_id": "550e8400-e29b-41d4-a716-446655440000"
+   }
+   ```
+## Webhook
+
+The optional `X-Webhook-Url` header can be used to receive webhook notifications about the document's status.
+
+The webhook will be called with a POST request with the following JSON body:
+```json
+{
+  "document_id": "<document-id>",
+  "state": "pending|processing|success|failed-latex-error|failed-no-main-tex|non-existent"
+}
+```
 
 ## Error Handling
 

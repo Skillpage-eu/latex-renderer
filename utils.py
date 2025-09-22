@@ -1,7 +1,9 @@
 import asyncio
 import os
 import tempfile
+
 import aiofiles
+import aiohttp
 from redis.asyncio import Redis
 
 
@@ -41,10 +43,20 @@ async def create_job_directory(uuid: str):
     return job_directory
 
 
-async def render_latex(uuid: str, redis: Redis):
+async def send_webhook(webhook_url: str, uuid: str, state: str):
+    async with aiohttp.ClientSession() as session:
+        form = aiohttp.FormData()
+        form.add_field("document_id", uuid)
+        form.add_field("state", state)
+        await session.post(webhook_url, data=form)
+
+
+async def render_latex(uuid: str, webhook_url: str | None, redis: Redis):
     job_directory = await get_job_directory(uuid)
     main_file = os.path.join(job_directory, "main.tex")
     if not os.path.exists(main_file):
+        if webhook_url:
+            await send_webhook(webhook_url, uuid, "failed-no-main-tex")
         await set_redis_status(redis, uuid, "failed-no-main-tex")
         raise FileNotFoundError("main.tex not found")
     await set_redis_status(redis, uuid, "processing")
@@ -54,6 +66,10 @@ async def render_latex(uuid: str, redis: Redis):
     return_code = await process.wait()
     match return_code:
         case 0:
+            if webhook_url:
+                await send_webhook(webhook_url, uuid, "success")
             await set_redis_status(redis, uuid, "success")
         case _:
+            if webhook_url:
+                await send_webhook(webhook_url, uuid, "failed-latex-error")
             await set_redis_status(redis, uuid, "failed-latex-error")

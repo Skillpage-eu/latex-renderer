@@ -33,9 +33,15 @@ async def lifespan(app: Starlette):
 # POST /document
 async def post_document(request):
     document_id = str(uuid.uuid4())
+    webhook_url = request.headers.get("X-Webhook-Url")
     await set_redis_status(request.app.state.redis, document_id, "pending")
     await save_documents_to_temp_dir(request, document_id)
-    task = BackgroundTask(render_latex, uuid=document_id, redis=request.app.state.redis)
+    task = BackgroundTask(
+        render_latex,
+        uuid=document_id,
+        webhook_url=webhook_url,
+        redis=request.app.state.redis,
+    )
     return JSONResponse(
         {"message": "Document received", "document_id": document_id},
         status_code=202,
