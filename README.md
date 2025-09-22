@@ -8,6 +8,25 @@ An asynchronous LaTeX rendering service that converts LaTeX documents to PDF.
 - Redis server
 - LuaLaTeX (LaTeX distribution with LuaTeX engine)
 
+## Docker
+
+Either build the service yourself or use the pre-built image from Docker Hub.
+
+Compose:
+
+```yaml
+services:
+  latex-renderer:
+    image: sbroeckling/skillpage-latex-renderer
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=False
+    depends_on:
+      - redis
+```
+
 ## Installation
 
 1. Clone the repository:
