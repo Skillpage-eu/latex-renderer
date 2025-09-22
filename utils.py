@@ -61,7 +61,7 @@ async def render_latex(uuid: str, webhook_url: str | None, redis: Redis):
         raise FileNotFoundError("main.tex not found")
     await set_redis_status(redis, uuid, "processing")
     process = await asyncio.create_subprocess_exec(
-        "lualatex", main_file, cwd=job_directory
+        "lualatex", "--interaction=batchmode", main_file, cwd=job_directory
     )
     return_code = await process.wait()
     match return_code:
