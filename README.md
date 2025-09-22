@@ -23,6 +23,9 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379/0
       - DEBUG=False
+    healthcheck:
+      test: curl --fail http://localhost:4343 || exit 1
+      interval: 5s
     depends_on:
       - redis
 ```
